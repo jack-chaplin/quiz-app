@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8" />
   <title>Vote</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -15,19 +16,19 @@
 
 <script>
 const SUPABASE_URL = "https://lajqwioamxhqyxrxpxjh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz"; // <-- publishable key
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function submitVote(option) {
-  const { error } = await supabase
+  const { error } = await supa
     .from("responses")
-    .insert({
-      question_id: "q1",
-      option: option
-    });
+    .insert({ question_id: "q1", option });
 
-  document.getElementById("msg").innerText = "Vote submitted!";
+  document.getElementById("msg").innerText =
+    error ? "There was a problem." : "Vote submitted!";
 }
 </script>
 </body>
 </html>
+
+
