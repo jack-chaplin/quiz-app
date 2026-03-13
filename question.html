@@ -20,13 +20,21 @@ const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz"; // <-- pu
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function submitVote(option) {
-  const { error } = await supa
+  const { data, error } = await supa
     .from("responses")
-    .insert({ question_id: "q1", option });
+    .insert({
+      question_id: "q1",
+      option: option
+    });
 
-  document.getElementById("msg").innerText =
-    error ? "There was a problem." : "Vote submitted!";
-}
+  if (error) {
+    console.error("Insert error:", error);
+    document.getElementById("msg").innerText = "Error submitting vote.";
+  } else {
+    console.log("Insert success:", data);
+    document.getElementById("msg").innerText = "Vote submitted!";
+  }
+
 </script>
 </body>
 </html>
