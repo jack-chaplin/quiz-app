@@ -32,6 +32,18 @@ function getDeviceId() {
 
 async function submitVote(option) {
   const deviceId = getDeviceId();
+}
+
+
+// Listen for teacher reset events
+supa.channel("reset_channel")
+  .on("broadcast", { event: "reset_q1" }, (payload) => {
+    const qid = payload.payload.question_id;
+    localStorage.removeItem("voted_" + qid);
+    document.getElementById("msg").innerText =
+      "Voting has been reset — you may vote again.";
+  })
+  .subscribe();
 
 
 // Use a vote flag per question
