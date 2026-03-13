@@ -30,11 +30,6 @@ function getDeviceId() {
   return id;
 }
 
-async function submitVote(option) {
-  const deviceId = getDeviceId();
-}
-
-
 // Listen for teacher reset events
 supa.channel("reset_channel")
   .on("broadcast", { event: "reset_q1" }, (payload) => {
@@ -83,7 +78,7 @@ async function submitVote(option) {
     document.getElementById("msg").innerText = "Vote submitted!";
   }
 }
-}
+
 </script>
 </body>
 </html>
