@@ -18,24 +18,53 @@
 const SUPABASE_URL = "https://lajqwioamxhqyxrxpxjh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz"; // <-- publishable key
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+// Generate or load local anonymous device ID
+function getDeviceId() {
+  let id = localStorage.getItem("device_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+
+
 
 async function submitVote(option) {
-  const { data, error } = await supa
+  const deviceId = getDeviceId();
+
+  // 1. Check if this device has already answered q1
+  const { data: existing, error: selectErr } = await supa
+    .from("responses")
+    .select("*")
+    .eq("question_id", "q1")
+    .eq("device_id", deviceId);
+
+  if (existing && existing.length > 0) {
+    document.getElementById("msg").innerText =
+      "You have already answered this question.";
+    return;
+  }
+
+  // 2. Submit vote
+  const { error: insertErr } = await supa
     .from("responses")
     .insert({
       question_id: "q1",
-      option: option
+      option: option,
+      device_id: deviceId
     });
 
-  if (error) {
-    console.error("Insert error:", error);
+  if (insertErr) {
+    console.error(insertErr);
     document.getElementById("msg").innerText = "Error submitting vote.";
   } else {
-    console.log("Insert success:", data);
     document.getElementById("msg").innerText = "Vote submitted!";
   }
-
+}
 </script>
+
 </body>
 </html>
 
