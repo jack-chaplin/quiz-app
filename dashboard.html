@@ -27,21 +27,36 @@ const chart = new Chart(ctx, {
 });
 
   
+
 async function resetResults() {
+  const questionId = "q1";
+
   const { error } = await supa
     .from("responses")
     .delete()
-    .eq("question_id", "q1");
+    .eq("question_id", questionId);
 
-  if (error) {
+  if (!error) {
+    // Broadcast to all student pages
+    await broadcastReset();
+
+    alert("Results cleared.");
+    loadVotes();
+  } else {
     console.error(error);
     alert("Error clearing results.");
-  } else {
-    alert("Results cleared.");
-    loadVotes(); // reload the updated empty chart
   }
 }
 
+
+
+async function broadcastReset() {
+  await supa.channel("reset_channel").send({
+    type: "broadcast",
+    event: "reset_q1",
+    payload: { question_id: "q1" }
+  });
+}
 
 async function loadVotes() {
   const { data, error } = await supa
