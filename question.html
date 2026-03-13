@@ -33,35 +33,45 @@ function getDeviceId() {
 async function submitVote(option) {
   const deviceId = getDeviceId();
 
-  // 1. Check if this device has already answered q1
-  const { data: existing, error: selectErr } = await supa
-    .from("responses")
-    .select("*")
-    .eq("question_id", "q1")
-    .eq("device_id", deviceId);
 
-  if (existing && existing.length > 0) {
-    document.getElementById("msg").innerText =
-      "You have already answered this question.";
-    return;
+// Use a vote flag per question
+function hasVoted(questionId) {
+  return localStorage.getItem("voted_" + questionId) === "true";
+}
+
+function setVoted(questionId) {
+  localStorage.setItem("voted_" + questionId, "true");
+}
+
+
+
+async function submitVote(option) {
+  const questionId = "q1";
+  const deviceId = getDeviceId();
+  
+  if (hasVoted(questionId)) {
+      document.getElementById("msg").innerText =
+        "You have already answered this question.";
+      return;
   }
-
-  // 2. Submit vote
-  const { error: insertErr } = await supa
+  
+  const { data, error } = await supa
     .from("responses")
     .insert({
-      question_id: "q1",
+      question_id: questionId,
       option: option,
       device_id: deviceId
     });
 
-  if (insertErr) {
-    console.error(insertErr);
+  if (error) {
+    console.error(error);
     document.getElementById("msg").innerText = "Error submitting vote.";
   } else {
+    setVoted(questionId);
     document.getElementById("msg").innerText = "Vote submitted!";
   }
 }
+
 </script>
 </body>
 </html>
