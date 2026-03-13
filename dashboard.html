@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <h2>Live Results: What is 2 + 2?</h2>
+  <canvas id="chart"></canvas>
+
+<script>
+const SUPABASE_URL = "https://lajqwioamxhqyxrxpxjh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ctx = document.getElementById('chart');
+const chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['A', 'B', 'C'],
+    datasets: [{
+      label: 'Votes',
+      data: [0, 0, 0],
+      backgroundColor: ['red', 'green', 'blue']
+    }]
+  }
+});
+
+async function loadVotes() {
+  const { data } = await supabase
+    .from("responses")
+    .select("*")
+    .eq("question_id", "q1");
+
+  updateChart(data);
+}
+
+function updateChart(rows) {
+  const counts = { A: 0, B: 0, C: 0 };
+
+  rows.forEach(r => counts[r.option]++);
+
+  chart.data.datasets[0].data = [
+    counts['A'],
+    counts['B'],
+    counts['C']
+  ];
+  chart.update();
+}
+
+// Load initial results
+loadVotes();
+
+// Subscribe to realtime
+supabase.channel('public:responses')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'responses' }, (payload) => {
+    loadVotes(); // refresh chart on every new vote
+  })
+  .subscribe();
+</script>
+
+</body>
+</html>

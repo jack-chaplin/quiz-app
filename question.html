@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vote</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h2>What is 2 + 2?</h2>
+  <button onclick="submitVote('A')">A: 3</button><br>
+  <button onclick="submitVote('B')">B: 4</button><br>
+  <button onclick="submitVote('C')">C: 5</button><br>
+
+  <p id="msg"></p>
+
+<script>
+const SUPABASE_URL = "https://lajqwioamxhqyxrxpxjh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function submitVote(option) {
+  const { error } = await supabase
+    .from("responses")
+    .insert({
+      question_id: "q1",
+      option: option
+    });
+
+  document.getElementById("msg").innerText = "Vote submitted!";
+}
+</script>
+</body>
+</html>
