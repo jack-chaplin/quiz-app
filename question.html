@@ -19,6 +19,7 @@ const SUPABASE_URL = "https://lajqwioamxhqyxrxpxjh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IR77Q9fzehcRVIxAdLxBdg_1gtpgdsz"; // <-- publishable key
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   
+
 // Generate or load local anonymous device ID
 function getDeviceId() {
   let id = localStorage.getItem("device_id");
@@ -28,8 +29,6 @@ function getDeviceId() {
   }
   return id;
 }
-
-
 
 async function submitVote(option) {
   const deviceId = getDeviceId();
@@ -64,7 +63,6 @@ async function submitVote(option) {
   }
 }
 </script>
-
 </body>
 </html>
 
