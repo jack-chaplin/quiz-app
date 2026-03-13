@@ -8,7 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>Live Results: What is 2 + 2?</h2>
+  <h2>Live Results: What is 2 + 2?</h2>  
+  <button onclick="resetResults()" style="margin-bottom: 20px;">
+    Reset Results
+  </button>
   <canvas id="chart"></canvas>
 
 <script>
@@ -22,6 +25,23 @@ const chart = new Chart(ctx, {
   data: { labels: ['A', 'B', 'C'], datasets: [{ label: 'Votes', data: [0,0,0] }] },
   options: { scales: { y: { beginAtZero: true } } }
 });
+
+  
+async function resetResults() {
+  const { error } = await supa
+    .from("responses")
+    .delete()
+    .eq("question_id", "q1");
+
+  if (error) {
+    console.error(error);
+    alert("Error clearing results.");
+  } else {
+    alert("Results cleared.");
+    loadVotes(); // reload the updated empty chart
+  }
+}
+
 
 async function loadVotes() {
   const { data, error } = await supa
